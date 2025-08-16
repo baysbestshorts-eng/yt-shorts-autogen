@@ -1,0 +1,1 @@
+# Tests directory for yt-shorts-autogen
