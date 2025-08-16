@@ -77,6 +77,9 @@ token.pickle
 # Generated videos
 output/
 videos/
+examples/
+custom_output/
+upload_simulation/
 *.mp4
 *.avi
 *.mov
