@@ -1,0 +1,146 @@
+# AI YouTube Shorts Generator Configuration
+
+# Logging Configuration
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/app.log"
+  max_size: 10MB
+  backup_count: 5
+
+# Content Scraper Configuration
+scraper:
+  sources:
+    - reddit
+    - news_api
+    - wikipedia
+  reddit:
+    subreddits:
+      - "todayilearned"
+      - "interestingasfuck"
+      - "explainlikeimfive"
+      - "askreddit"
+    max_posts: 10
+    time_filter: "day"
+  content_filters:
+    min_length: 100
+    max_length: 500
+    exclude_nsfw: true
+    exclude_politics: true
+
+# Content Rewriter Configuration
+rewriter:
+  model: "gpt-3.5-turbo"
+  max_tokens: 300
+  temperature: 0.7
+  style: "engaging_shorts"
+  target_duration: 60  # seconds
+  include_hook: true
+  include_cta: true
+
+# Text-to-Speech Configuration
+tts:
+  engine: "gtts"
+  language: "en"
+  speed: 1.2
+  voice_gender: "neutral"
+  output_format: "mp3"
+  sample_rate: 44100
+
+# Voice Changer Configuration
+voice_changer:
+  enabled: true
+  effects:
+    - pitch_shift: 0.1
+    - reverb: 0.2
+    - compression: true
+  output_format: "wav"
+
+# Image Generator Configuration
+image_generator:
+  model: "stable-diffusion-xl"
+  resolution: "1080x1920"  # Vertical for shorts
+  images_per_video: 5
+  style: "realistic"
+  enhancement: true
+  safety_filter: true
+  prompt_templates:
+    - "A stunning {subject} in {style}, high quality, detailed"
+    - "Beautiful {subject} with {description}, cinematic lighting"
+
+# Video Editor Configuration
+video_editor:
+  resolution: "1080x1920"  # 9:16 aspect ratio for shorts
+  fps: 30
+  duration: 60  # seconds
+  transitions:
+    - fade
+    - zoom
+    - slide
+  text_overlay:
+    enabled: true
+    font: "Arial Bold"
+    size: 48
+    color: "white"
+    outline: true
+  background_music:
+    enabled: false
+    volume: 0.3
+
+# YouTube Uploader Configuration
+uploader:
+  auto_upload: false
+  privacy_status: "private"  # private, unlisted, public
+  category_id: 24  # Entertainment
+  default_tags:
+    - "shorts"
+    - "ai"
+    - "generated"
+    - "entertainment"
+    - "facts"
+  thumbnail:
+    auto_generate: true
+    template: "engaging"
+  scheduling:
+    enabled: false
+    time: "12:00"
+    timezone: "UTC"
+
+# Content Guidelines
+content_guidelines:
+  filter_enabled: true
+  allowed_topics:
+    - science
+    - technology
+    - history
+    - nature
+    - education
+  blocked_topics:
+    - politics
+    - religion
+    - violence
+    - adult_content
+  sentiment_check: true
+  fact_check: false
+
+# Rate Limiting
+rate_limiting:
+  openai_requests_per_minute: 20
+  youtube_uploads_per_day: 10
+  image_generations_per_hour: 30
+  request_delay: 1  # seconds between requests
+
+# File Paths
+paths:
+  output_directory: "output"
+  temp_directory: "temp"
+  logs_directory: "logs"
+  assets_directory: "assets"
+  templates_directory: "templates"
+
+# Development Settings
+development:
+  debug_mode: false
+  save_intermediate_files: true
+  skip_upload: false
+  test_mode: false
