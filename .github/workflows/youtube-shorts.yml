@@ -1,0 +1,80 @@
+name: YouTube Shorts Auto-Generator
+
+on:
+  schedule:
+    # Run daily at 12 PM UTC (customize as needed)
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+    # Allow manual trigger
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'README.md'
+      - '.env.example'
+
+jobs:
+  generate-and-upload:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Generate YouTube Short
+      env:
+        # GitHub Secrets are accessed using the secrets context
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+        YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+        YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        
+        # Optional configuration (with defaults)
+        VIDEO_DURATION: ${{ secrets.VIDEO_DURATION || '60' }}
+        CONTENT_THEME: ${{ secrets.CONTENT_THEME || 'general' }}
+        
+        # Workflow-specific settings
+        DEBUG: 'false'
+        LOG_LEVEL: 'INFO'
+        
+      run: |
+        echo "Starting YouTube Shorts generation..."
+        python main.py --generate --upload
+        
+    - name: Upload logs on failure
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: workflow-logs
+        path: |
+          *.log
+          logs/
+        retention-days: 7
+        
+    - name: Notify on success
+      if: success()
+      run: |
+        echo "✅ YouTube Short successfully generated and uploaded!"
+        
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "❌ YouTube Short generation failed. Check the logs for details."
